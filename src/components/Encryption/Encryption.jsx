@@ -2,51 +2,58 @@ import React, { useState } from "react";
 import { FaSmile } from "react-icons/fa";
 import CryptoJS from "crypto-js";
 import Modal from "../Modal/Modal";
-// const ENCRYPTION_KEY  = "XkhZG4fW2t2W";
+
+// Encryption key for this educational demo
 const ENCRYPTION_KEY = "vuQfBzil76D2r9bYA3m-MA";
 
-
-const Hash = () => {
+const Encryption = () => {
   const [text, setText] = useState("");
   const [screen, setScreen] = useState("encrypt");
   const [errorMessage, setErrorMessage] = useState("");
-  const [encrptedData, setEncrptedData] = useState("");
+  const [encryptedData, setEncryptedData] = useState("");
   const [decryptedData, setDecryptedData] = useState("");
   const [openModal, setOpenModal] = useState(false);
+
   const [copyText, setCopyText] = useState(
-    screen === "encrypt" ? "Copy Hash" : "Copy Text"
+    screen === "encrypt" ? "Copy Ciphertext" : "Copy Text"
   );
 
   const [showCopyMessage, setShowCopyMessage] = useState("");
 
   const switchScreen = (type) => {
     setScreen(type);
-    setCopyText(type === "encrypt" ? "Copy Hash" : "Copy Text"); 
+    setCopyText(
+      type === "encrypt" ? "Copy Ciphertext" : "Copy Text"
+    );
     setText("");
-    setEncrptedData("");
+    setEncryptedData("");
     setDecryptedData("");
     setErrorMessage("");
   };
 
-  // encryptData
+  // Encrypt data using AES
   const encryptData = () => {
     try {
       const data = CryptoJS.AES.encrypt(
         JSON.stringify(text),
         ENCRYPTION_KEY
       ).toString();
-      setEncrptedData(data);
+
+      setEncryptedData(data);
       setErrorMessage("");
     } catch (error) {
       setErrorMessage("Encryption failed");
     }
   };
 
-  // decryptData
+  // Decrypt data using AES
   const decryptData = () => {
     try {
       const bytes = CryptoJS.AES.decrypt(text, ENCRYPTION_KEY);
-      const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      const data = JSON.parse(
+        bytes.toString(CryptoJS.enc.Utf8)
+      );
+
       setDecryptedData(data);
       setErrorMessage("");
     } catch (error) {
@@ -54,37 +61,55 @@ const Hash = () => {
     }
   };
 
-  // clickHandler
+  // Handle Encrypt / Decrypt button
   const clickHandler = () => {
     if (!text) {
       setErrorMessage("Please enter something");
       return;
     }
+
     if (screen === "encrypt") {
       encryptData();
-      setOpenModal(!openModal);
+      setOpenModal(true);
     } else {
       decryptData();
-      setOpenModal(!openModal);
+      setOpenModal(true);
     }
   };
-  // handleCopy
+
+  // Copy encrypted data or decrypted text
   const handleCopy = () => {
-    const textToCopy = screen === "encrypt" ? encrptedData : decryptedData;
+    const textToCopy =
+      screen === "encrypt" ? encryptedData : decryptedData;
+
     navigator.clipboard
       .writeText(textToCopy)
       .then(() => {
-        const message = screen === "encrypt" ? "Hash copied" : "Text copied";
+        const message =
+          screen === "encrypt"
+            ? "Ciphertext copied"
+            : "Text copied";
+
         setShowCopyMessage(message);
-        setCopyText(screen === "encrypt" ? "Copy Hash" : "Copy Text"); 
+
+        setCopyText(
+          screen === "encrypt"
+            ? "Copy Ciphertext"
+            : "Copy Text"
+        );
 
         setTimeout(() => {
           setShowCopyMessage("");
-          setCopyText(screen === "encrypt" ? "Copy Hash" : "Copy Text"); 
+
+          setCopyText(
+            screen === "encrypt"
+              ? "Copy Ciphertext"
+              : "Copy Text"
+          );
         }, 2000);
       })
       .catch((error) => {
-        console.error("Error copying text: ", error);
+        console.error("Error copying text:", error);
       });
   };
 
@@ -96,12 +121,14 @@ const Hash = () => {
         }}
         className="relative h-screen flex items-center justify-center bg-gradient-to-r from-blue-800 to-gray-900 overflow-hidden p-4 sm:p-6 lg:p-8"
       >
-        {/*  shapes */}
+        {/* Shapes */}
         <div className="absolute -top-16 -left-16 w-72 h-72 bg-blue-700/30 rounded-full backdrop-blur-md animate-move1"></div>
+
         <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-gray-800/25 rounded-full backdrop-blur-lg animate-move2"></div>
+
         <div className="absolute top-20 right-1/2 w-64 h-64 bg-blue-600/35 rounded-full backdrop-blur-md animate-move3"></div>
 
-        {/*  glass card */}
+        {/* Glass card */}
         {!openModal ? (
           <div
             onClick={(e) => {
@@ -109,11 +136,11 @@ const Hash = () => {
             }}
             className="glass-shape w-full sm:w-3/4 lg:w-1/2 bg-gray-900/80 backdrop-blur-md rounded-2xl p-4 sm:p-6 lg:p-8 border border-gray-700 shadow-xl z-10"
           >
-              <h2 className="lg:text-2xl flex items-center justify-center gap-2 text-center font-semibold text-white mb-5">
-                Let's take a break and have some fun <FaSmile
-                className="text-green-400 relative text-2xl top-[2px]"
-              />
-              </h2>
+            <h2 className="lg:text-2xl flex items-center justify-center gap-2 text-center font-semibold text-white mb-5">
+              Let's take a break and have some fun
+              <FaSmile className="text-green-400 relative text-2xl top-[2px]" />
+            </h2>
+
             <div className="flex justify-center gap-5">
               <button
                 className={`bg-white w-full bg-opacity-10 border border-white/30 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-opacity-20 transition-colors duration-300 ${
@@ -137,6 +164,7 @@ const Hash = () => {
                 Decrypt
               </button>
             </div>
+
             <textarea
               className="w-full h-1/2 p-4 my-4 bg-white bg-opacity-10 border border-white/30 text-white font-medium rounded-lg shadow-md focus:outline-none focus:bg-opacity-20 transition-colors duration-300 placeholder-white/50 resize-none"
               value={text}
@@ -147,7 +175,8 @@ const Hash = () => {
                   ? "Please enter your text"
                   : "Please enter encrypted data"
               }
-            ></textarea>
+            />
+
             {errorMessage && (
               <div className="text-red-800 text-lg font-semibold p-4 bg-white bg-opacity-20 border border-white/30 rounded-lg shadow-lg backdrop-blur-sm animate-shake">
                 {errorMessage}
@@ -165,7 +194,7 @@ const Hash = () => {
           </div>
         ) : (
           <Modal
-            encrptedData={encrptedData}
+            encryptedData={encryptedData}
             decryptedData={decryptedData}
             screen={screen}
             open={openModal}
@@ -173,7 +202,7 @@ const Hash = () => {
             showCopyMessage={showCopyMessage}
             copyText={copyText}
             close={() => {
-              setOpenModal(!openModal);
+              setOpenModal(false);
             }}
             setShowCopyMessage={setShowCopyMessage}
           />
@@ -183,4 +212,4 @@ const Hash = () => {
   );
 };
 
-export default Hash;
+export default Encryption;

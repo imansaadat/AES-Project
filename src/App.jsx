@@ -1,10 +1,10 @@
-import Hash from "./components/Hash/Hash"
+import Encryption from "./components/Encryption/Encryption";
 
 function App() {
 
   return (
   <>
-    <Hash />
+   <Encryption />
   </>
   )
 }
